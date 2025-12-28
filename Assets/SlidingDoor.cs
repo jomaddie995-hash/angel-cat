@@ -2,26 +2,26 @@ using UnityEngine;
 
 public class SlidingDoor : MonoBehaviour
 {
-    [Header("ÉèÖÃ")]
+    [Header("è®¾ç½®")]
     public Vector3 openOffset = new Vector3(2f, 0, 0);
     public float speed = 3f;
 
     private Vector3 closedPosition;
     private Vector3 targetPosition;
-    private BoxCollider doorPhysicsCollider; // ÃÅ±¾ÉíµÄÎïÀíÅö×²Ìå
+    private BoxCollider doorPhysicsCollider; // é—¨æœ¬èº«çš„ç‰©ç†ç¢°æ’ä½“
 
     void Start()
     {
         closedPosition = transform.position;
         targetPosition = closedPosition;
 
-        // »ñÈ¡ÃÅÉíÉÏµÄ Collider£¨×¢Òâ£º²»ÊÇ´¥·¢Æ÷ÄÇ¸öCube£¬ÊÇÃÅ°åÉÏµÄ£©
+        // è·å–é—¨èº«ä¸Šçš„ Colliderï¼ˆæ³¨æ„ï¼šä¸æ˜¯è§¦å‘å™¨é‚£ä¸ªCubeï¼Œæ˜¯é—¨æ¿ä¸Šçš„ï¼‰
         doorPhysicsCollider = GetComponent<BoxCollider>();
     }
 
     void Update()
     {
-        // Æ½»¬ÒÆ¶¯Âß¼­
+        // å¹³æ»‘ç§»åŠ¨é€»è¾‘
         transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * speed);
     }
 
@@ -29,10 +29,11 @@ public class SlidingDoor : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            // Debug.Log("å¼€é—¨");
             targetPosition = closedPosition + openOffset;
 
-            // ¹Ø¼ü£ºÃÅ¿ªÊ¼´ò¿ªÊ±£¬½ûÓÃÃÅµÄÎïÀíÅö×²£¬·ÀÖ¹Ëü°ÑÃ¨¡°ÍÆ×ß¡±»ò¡°¿¨×¡¡±
-            if (doorPhysicsCollider != null) doorPhysicsCollider.enabled = false;
+            // å…³é”®ï¼šé—¨å¼€å§‹æ‰“å¼€æ—¶ï¼Œç¦ç”¨é—¨çš„ç‰©ç†ç¢°æ’ï¼Œé˜²æ­¢å®ƒæŠŠçŒ«â€œæ¨èµ°â€æˆ–â€œå¡ä½â€
+            // if (doorPhysicsCollider != null) doorPhysicsCollider.enabled = false;
         }
     }
 
@@ -40,11 +41,13 @@ public class SlidingDoor : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            // Debug.Log("å…³é—¨");
+            
             targetPosition = closedPosition;
 
-            // ¹Ø¼ü£ºÃÅÍêÈ«¹ØÉÏ»ò¿ªÊ¼¹ØÉÏÊ±£¬»Ö¸´ÎïÀíÅö×²
-            // Èç¹ûÏë¸ü¸ß¼¶Ò»µã£¬¿ÉÒÔÓÃĞ­³ÌµÈÃÅÍêÈ«¹éÎ»ÔÙ»Ö¸´£¬µ«ÕâÀïÏÈ¼òµ¥´¦Àí
-            if (doorPhysicsCollider != null) doorPhysicsCollider.enabled = true;
+            // å…³é”®ï¼šé—¨å®Œå…¨å…³ä¸Šæˆ–å¼€å§‹å…³ä¸Šæ—¶ï¼Œæ¢å¤ç‰©ç†ç¢°æ’
+            // å¦‚æœæƒ³æ›´é«˜çº§ä¸€ç‚¹ï¼Œå¯ä»¥ç”¨åç¨‹ç­‰é—¨å®Œå…¨å½’ä½å†æ¢å¤ï¼Œä½†è¿™é‡Œå…ˆç®€å•å¤„ç†
+            // if (doorPhysicsCollider != null) doorPhysicsCollider.enabled = true;
         }
     }
 }
