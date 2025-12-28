@@ -2,18 +2,19 @@ using UnityEngine;
 
 public class CharacterFlip : MonoBehaviour
 {
-    private bool isFacingRight = true; // 初始状态是否朝右
+    // 1. 在面板里把你的 Graphics 子物体拖到这个槽位
+    public Transform graphicsTransform;
+    private bool isFacingRight = true;
 
     void Update()
     {
-        float moveX = Input.GetAxis("Horizontal");
+        // 使用 GetAxisRaw 可以获得更干脆的输入（0, 1, 或 -1）
+        float moveX = Input.GetAxisRaw("Horizontal");
 
-        // 如果向右移动且当前朝向左，则翻转
         if (moveX > 0 && !isFacingRight)
         {
             Flip();
         }
-        // 如果向左移动且当前朝向右，则翻转
         else if (moveX < 0 && isFacingRight)
         {
             Flip();
@@ -22,16 +23,11 @@ public class CharacterFlip : MonoBehaviour
 
     void Flip()
     {
-        // 切换布尔值状态
         isFacingRight = !isFacingRight;
 
-        // 获取当前的 localScale
-        Vector3 theScale = transform.localScale;
-
-        // 将 X 轴乘以 -1 实现镜像
+        // 2. 关键修改：操作的是子物体的 Scale
+        Vector3 theScale = graphicsTransform.localScale;
         theScale.x *= -1;
-
-        // 重新赋值回物体的 scale
-        transform.localScale = theScale;
+        graphicsTransform.localScale = theScale;
     }
 }
