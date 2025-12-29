@@ -19,13 +19,19 @@ public class SimpleDoor : MonoBehaviour
         doorPivot.localRotation = Quaternion.Slerp(doorPivot.localRotation, targetRot, Time.deltaTime * speed);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) playerIn = true;
+        if (other.CompareTag("Player"))
+        {
+            playerIn = true;
+         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player")) playerIn = false;
+        if (other.CompareTag("Player"))
+        {
+            playerIn = false;
+        }
     }
 }
