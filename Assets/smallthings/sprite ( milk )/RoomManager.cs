@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 
 [System.Serializable]
@@ -15,21 +15,21 @@ public class RoomManager : MonoBehaviour
 
     void Start()
     {
-        // ÓÎÏ·¿ªÊ¼Ê±£¬ÎªÁË±£ÏÕ£¬¿ÉÒÔÏÈÒş²ØËùÓĞ·¿¼ä
-        // »òÕßÄã¿ÉÒÔÊÖ¶¯ÔÚ±à¼­Æ÷ÀïÁôÏÂ³õÊ¼·¿¼ä£¬¹Ø±ÕÆäËû·¿¼ä
-    }
+Â  Â  Â  Â  // æ¸¸æˆå¼€å§‹æ—¶ï¼Œä¸ºäº†ä¿é™©ï¼Œå¯ä»¥å…ˆéšè—æ‰€æœ‰æˆ¿é—´
+Â  Â  Â  Â  // æˆ–è€…ä½ å¯ä»¥æ‰‹åŠ¨åœ¨ç¼–è¾‘å™¨é‡Œç•™ä¸‹åˆå§‹æˆ¿é—´ï¼Œå…³é—­å…¶ä»–æˆ¿é—´
+Â  Â  }
 
-    // µ±Íæ¼Ò½øÈëÄ³¸ö·¿¼äµÄ´¥·¢ÇøÓòÊ±
-    public void HandleEnter(Collider zone)
+Â  Â  // å½“ç©å®¶è¿›å…¥æŸä¸ªæˆ¿é—´çš„è§¦å‘åŒºåŸŸæ—¶
+Â  Â  public void HandleEnter(Collider zone)
     {
         foreach (var package in roomList)
         {
             if (package.roomContent == null) continue;
 
-            // ºËĞÄÂß¼­£º
-            // Èç¹ûÕâ¸ö°üÀïµÄ triggerZone ÊÇÍæ¼Ò¸Õ¸Õ²Èµ½µÄÄÇ¸ö£¬¾ÍÏÔÊ¾ (true)
-            // ·ñÔò£¬È«²¿Òş²Ø (false)
-            if (package.triggerZone == zone)
+Â  Â  Â  Â  Â  Â  // æ ¸å¿ƒé€»è¾‘ï¼š
+Â  Â  Â  Â  Â  Â  // å¦‚æœè¿™ä¸ªåŒ…é‡Œçš„ triggerZone æ˜¯ç©å®¶åˆšåˆšè¸©åˆ°çš„é‚£ä¸ªï¼Œå°±æ˜¾ç¤º (true)
+Â  Â  Â  Â  Â  Â  // å¦åˆ™ï¼Œå…¨éƒ¨éšè— (false)
+Â  Â  Â  Â  Â  Â  if (package.triggerZone == zone)
             {
                 package.roomContent.SetActive(true);
             }
@@ -40,6 +40,6 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-    // ×¢Òâ£ºÔÚÕâÖÖ¡°ÅÅËûĞÔ¡±Âß¼­ÏÂ£¬ÎÒÃÇÍ¨³£²»ĞèÒª HandleExit¡£
-    // ÒòÎª½øÈëÏÂÒ»¸ö·¿¼äµÄ Enter ÊÂ¼ş»á×Ô¶¯¹Ø±ÕÉÏÒ»¸ö·¿¼ä¡£
+Â  Â  // æ³¨æ„ï¼šåœ¨è¿™ç§â€œæ’ä»–æ€§â€é€»è¾‘ä¸‹ï¼Œæˆ‘ä»¬é€šå¸¸ä¸éœ€è¦ HandleExitã€‚
+Â  Â  // å› ä¸ºè¿›å…¥ä¸‹ä¸€ä¸ªæˆ¿é—´çš„ Enter äº‹ä»¶ä¼šè‡ªåŠ¨å…³é—­ä¸Šä¸€ä¸ªæˆ¿é—´ã€‚
 }

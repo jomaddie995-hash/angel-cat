@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class TriggerProxy : MonoBehaviour
 {
@@ -6,22 +6,22 @@ public class TriggerProxy : MonoBehaviour
 
     void Start()
     {
-        // ×Ô¶¯ÔÚ³¡¾°ÖĞÑ°ÕÒÖ¸»Ó¹Ù½Å±¾
-        manager = Object.FindFirstObjectByType<RoomManager>();
+Â  Â  Â  Â  // è‡ªåŠ¨åœ¨åœºæ™¯ä¸­å¯»æ‰¾æŒ‡æŒ¥å®˜è„šæœ¬
+Â  Â  Â  Â  manager = Object.FindFirstObjectByType<RoomManager>();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // Ö»ÓĞÍæ¼Ò½øÈëÊ±£¬²ÅÍ¨ÖªÖ¸»Ó¹ÙÇĞ»»·¿¼ä
-        if (other.CompareTag("Player") && manager != null)
+Â  Â  Â  Â  // åªæœ‰ç©å®¶è¿›å…¥æ—¶ï¼Œæ‰é€šçŸ¥æŒ‡æŒ¥å®˜åˆ‡æ¢æˆ¿é—´
+Â  Â  Â  Â  if (other.CompareTag("Player") && manager != null)
         {
             manager.HandleEnter(GetComponent<Collider>());
         }
     }
 
-    // É¾³ıÁË¶Ô HandleExit µÄµ÷ÓÃ£¬ÒòÎª½øÈëÏÂÒ»¸ö·¿¼ä»á×Ô¶¯¹Ø±ÕÉÏÒ»¸ö
-    private void OnTriggerExit(Collider other)
+Â  Â  // åˆ é™¤äº†å¯¹ HandleExit çš„è°ƒç”¨ï¼Œå› ä¸ºè¿›å…¥ä¸‹ä¸€ä¸ªæˆ¿é—´ä¼šè‡ªåŠ¨å…³é—­ä¸Šä¸€ä¸ª
+Â  Â  private void OnTriggerExit(Collider other)
     {
-        // ÕâÀïÁô¿Õ£¬»òÕßÖ±½Ó°ÑÕâ¸öº¯ÊıÉ¾µô
-    }
+Â  Â  Â  Â  // è¿™é‡Œç•™ç©ºï¼Œæˆ–è€…ç›´æ¥æŠŠè¿™ä¸ªå‡½æ•°åˆ æ‰
+Â  Â  }
 }
