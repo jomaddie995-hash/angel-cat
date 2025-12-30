@@ -15,6 +15,8 @@ public class StepSoundTrigger : MonoBehaviour
     public float frameRate = 10f; // 逐帧动画的帧率（每秒播放多少帧）
     public Transform animationSpawnPoint; // 动画播放的位置（物体旁的指定点，可在编辑器赋值）
     public float animationDuration = 1f; // 动画播放时长（自动销毁动画物体）
+    // 可自定义上方偏移距离（在Inspector面板调整，默认0.5米，方便灵活修改）
+    public float upOffsetDistance = 0.5f;
     private GameObject animationGameObject; // 承载逐帧动画的临时物体
     private SpriteRenderer animationSpriteRenderer; // 精灵渲染器，用于切换帧
 
@@ -106,7 +108,7 @@ public class StepSoundTrigger : MonoBehaviour
     }
 
     /// <summary>
-    /// 在物体旁播放逐帧动画
+    /// 在物体上方播放逐帧动画（已实现悬浮上方+50%缩小后再放大15%）
     /// </summary>
     private void PlayFrameAnimationAtObjectSide()
     {
@@ -125,7 +127,7 @@ public class StepSoundTrigger : MonoBehaviour
 
         // 1. 创建临时游戏物体用于承载逐帧动画
         animationGameObject = new GameObject("TouchFrameAnimation");
-        // 2. 设置动画物体的位置（物体旁：若已指定spawnPoint则使用，否则在当前物体偏移位置）
+        // 2. 设置动画物体的位置（优先使用指定spawnPoint，否则悬浮在当前物体上方）
         if (animationSpawnPoint != null)
         {
             animationGameObject.transform.position = animationSpawnPoint.position;
@@ -133,10 +135,14 @@ public class StepSoundTrigger : MonoBehaviour
         }
         else
         {
-            // 默认在当前物体右侧偏移1米的位置（可根据需求调整偏移量）
-            animationGameObject.transform.position = transform.position + transform.right * 1f;
+            // 悬浮在挂载脚本物体的上方（使用transform.up获取物体自身上方）
+            animationGameObject.transform.position = transform.position + transform.up * upOffsetDistance;
             animationGameObject.transform.rotation = transform.rotation;
         }
+
+        // 核心修改：原有50%缩放基础上，再放大15%（计算逻辑：0.5 * 1.15 = 0.575）
+        // 1.15 对应15%的放大比例，保持等比缩放，避免动画变形
+        animationGameObject.transform.localScale = Vector3.one * 0.575f;
 
         // 3. 添加精灵渲染器组件，用于显示逐帧精灵
         animationSpriteRenderer = animationGameObject.AddComponent<SpriteRenderer>();
