@@ -13,8 +13,10 @@ public class PlayerController3D : MonoBehaviour
 
     private Rigidbody rb;
     private BoxCollider col;
+    private Animator anim; // 引用动画组件
+
     private bool isGrounded;
-    private bool jumpRequest = false; // 新增：用于记录跳跃指令
+    private bool jumpRequest = false;
 
     private float originalHeight;
     private Vector3 originalCenter;
@@ -23,11 +25,13 @@ public class PlayerController3D : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         col = GetComponent<BoxCollider>();
+        // HD-2D通常将Sprite和Animator放在子物体上，所以用GetComponentInChildren
+        anim = GetComponentInChildren<Animator>();
 
         originalHeight = col.size.y;
         originalCenter = col.center;
 
-        // 冻结旋转和X轴。开启 Interpolate 解决相机跟随抖动
+        // 冻结旋转和X轴，开启插值平滑相机
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
@@ -37,44 +41,65 @@ public class PlayerController3D : MonoBehaviour
         // 1. 地面检测
         isGrounded = Physics.CheckSphere(groundCheck.position, checkRadius, groundLayer);
 
-        // 2. 捕捉跳跃输入 (不要在Update里直接改velocity，而是设个布尔值)
+        // 2. 捕捉跳跃输入
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             jumpRequest = true;
         }
 
-        // 3. 下蹲检测 (保持在Update以保证响应速度)
+        // 3. 处理下蹲
         HandleCrouch();
+
+        // 4. 更新动画状态
+        UpdateAnimations();
     }
 
     void FixedUpdate()
     {
-        // 4. 统一处理速度
-        // 先获取当前的水平/垂直速度
         float currentYVelocity = rb.velocity.y;
 
-        // 如果有跳跃请求，修改 Y 轴速度
         if (jumpRequest)
         {
             currentYVelocity = jumpForce;
-            jumpRequest = false; // 处理完后重置
+            jumpRequest = false;
         }
 
-        // 统一应用速度：Z轴保持恒速，Y轴保持物理计算后的速度（或跳跃速度）
+        // 应用位移：X轴锁定，Y轴物理计算，Z轴由moveSpeed决定
         rb.velocity = new Vector3(0, currentYVelocity, moveSpeed);
     }
 
     void HandleCrouch()
     {
+        // 按住 S 键下蹲
         if (Input.GetKey(KeyCode.S))
         {
             col.size = new Vector3(col.size.x, originalHeight * 0.5f, col.size.z);
             col.center = new Vector3(originalCenter.x, originalCenter.y - (originalHeight * 0.25f), originalCenter.z);
+
+            if (anim != null) anim.SetBool("isCrouching", true);
         }
+        // 松开 S 键恢复
         else if (Input.GetKeyUp(KeyCode.S))
         {
             col.size = new Vector3(col.size.x, originalHeight, col.size.z);
             col.center = originalCenter;
+
+            if (anim != null) anim.SetBool("isCrouching", false);
         }
+    }
+
+    void UpdateAnimations()
+    {
+        if (anim == null) return;
+
+        // 判断是否有 Z 轴速度来播放行走动画
+        // 注意：因为你目前 Z 轴是自动恒速的，所以只要游戏运行 isMoving 就会为 true
+        bool isMoving = Mathf.Abs(rb.velocity.z) > 0.1f;
+
+        anim.SetBool("isMoving", isMoving);
+        anim.SetBool("isGrounded", isGrounded);
+
+        // 可选：如果需要跳跃上升和下落的动画细节，可以传 Y 轴速度
+        anim.SetFloat("vSpeed", rb.velocity.y);
     }
 }
