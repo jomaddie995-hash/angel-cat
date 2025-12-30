@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections; // 新增：添加IEnumerator需要的命名空间
+using System.Collections;
 
 public class StepSoundTrigger : MonoBehaviour
 {
@@ -20,8 +20,19 @@ public class StepSoundTrigger : MonoBehaviour
     private GameObject animationGameObject; // 承载逐帧动画的临时物体
     private SpriteRenderer animationSpriteRenderer; // 精灵渲染器，用于切换帧
 
+    // 自身碰撞体（提前获取，避免重复调用GetComponent）
+    private Collider selfCollider;
+
     void Start()
     {
+        // 初始化自身碰撞体
+        selfCollider = GetComponent<Collider>();
+        if (selfCollider == null)
+        {
+            Debug.LogWarning("挂载StepSoundTrigger的物体未添加Collider组件！");
+            return;
+        }
+
         // 初始化时，查找场景中是否有DecibelMeter组件
         decibelMeter = FindObjectOfType<DecibelMeter>();
         if (decibelMeter == null)
@@ -51,7 +62,7 @@ public class StepSoundTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // 检查是否是玩家（Tag为"Player"）
+        // 检查是否是Player Tag的角色（仅Player触发脚本逻辑）
         if (other.CompareTag("Player"))
         {
             // 如果找到管理器，就调用增加方法
@@ -59,15 +70,32 @@ public class StepSoundTrigger : MonoBehaviour
             {
                 decibelMeter.AddDecibels(triggerAmount);
             }
-            // 新增：播放玩家触碰音效
+            // 播放玩家触碰音效
             PlayTouchSound();
-            // 新增：在物体旁播放逐帧动画
+            // 在物体旁播放逐帧动画
             PlayFrameAnimationAtObjectSide();
-            // Debug.Log("播放脚步声"); 
+        }
+        else
+        {
+            // 非Player角色：自动忽略与当前物体的碰撞，避免被撞倒
+            if (selfCollider != null)
+            {
+                Physics.IgnoreCollision(selfCollider, other, true);
+            }
         }
     }
 
-    // 新增：鼠标左键点击物体触发逻辑（Unity内置检测方法）
+    // 可选：非Player角色离开后，可选择是否恢复碰撞（根据需求开启）
+    private void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player") && selfCollider != null)
+        {
+            // 注释：若需要非Player角色离开后恢复碰撞，取消下面注释
+            // Physics.IgnoreCollision(selfCollider, other, false);
+        }
+    }
+
+    // 鼠标左键点击物体触发逻辑（Unity内置检测方法）
     void OnMouseDown()
     {
         // 检测是否按下鼠标左键（0对应左键，1右键，2中键）
