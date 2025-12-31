@@ -9,6 +9,9 @@ public class AreaTriggerSceneSwitch : MonoBehaviour
     public string targetSceneName; // 目标场景名称（与Build Settings中一致）
     public float totalDelayTime = 1.5f; // 总延迟跳转时间（不变，仍为1.5秒）
     public float uiScaleTime = 0.5f; // UI放大动画时长（设置为0.5秒）
+    [Header("音频配置")]
+    public AudioSource bgmSource;    // 拖入场景里的 BGM 播放器
+    public AudioClip storyMusic;     // 拖入那张照片对应的音乐
     [Header("触发配置：填写你创建的Tag名称")]
     public string targetObjectTag = "TriggerObject"; // 指定触发物体的Tag名称
     private bool hasTriggered = false; // 防止重复触发的标记
@@ -28,6 +31,16 @@ public class AreaTriggerSceneSwitch : MonoBehaviour
     // 3D场景专用：触发器检测（添加Tag判断）
     private void OnTriggerEnter(Collider other)
     {
+        // 触发时切换音乐
+        if (!hasTriggered && other.CompareTag(targetObjectTag))
+        {
+            if (bgmSource != null && storyMusic != null)
+            {
+                bgmSource.clip = storyMusic;
+                bgmSource.Play();
+            }
+        }
+
         // 只有：未触发过 + 进入物体的Tag与指定Tag一致 才会执行
         if (!hasTriggered && other.CompareTag(targetObjectTag))
         {

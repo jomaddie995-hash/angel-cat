@@ -5,6 +5,10 @@ public class PlayerController3D : MonoBehaviour
     [Header("移动设置")]
     public float moveSpeed = 10f;
     public float jumpForce = 7f;
+    [Header("音效设置")]
+    public AudioSource audioSource; // 拖入小猫身上的 AudioSource
+    public AudioClip jumpSound;     // 跳跃音效
+    public AudioClip crouchSound;   // 下蹲音效
 
     [Header("状态检测")]
     public Transform groundCheck;
@@ -45,6 +49,14 @@ public class PlayerController3D : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             jumpRequest = true;
+            // 2. 捕捉跳跃输入
+            if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+            {
+                jumpRequest = true;
+                // --- 添加这一行 ---
+                if (audioSource != null && jumpSound != null) audioSource.PlayOneShot(jumpSound);
+            }
+
         }
 
         // 3. 处理下蹲
@@ -70,7 +82,16 @@ public class PlayerController3D : MonoBehaviour
 
     void HandleCrouch()
     {
-        // 按住 S 键下蹲
+        // 1. 按下 S 的瞬间：响一声音效
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            if (audioSource != null && crouchSound != null)
+            {
+                audioSource.PlayOneShot(crouchSound);
+            }
+        }
+
+        // 2. 按住 S 键：执行下蹲逻辑
         if (Input.GetKey(KeyCode.S))
         {
             col.size = new Vector3(col.size.x, originalHeight * 0.5f, col.size.z);
@@ -78,7 +99,7 @@ public class PlayerController3D : MonoBehaviour
 
             if (anim != null) anim.SetBool("isCrouching", true);
         }
-        // 松开 S 键恢复
+        // 3. 松开 S 键：恢复高度
         else if (Input.GetKeyUp(KeyCode.S))
         {
             col.size = new Vector3(col.size.x, originalHeight, col.size.z);
@@ -93,13 +114,12 @@ public class PlayerController3D : MonoBehaviour
         if (anim == null) return;
 
         // 判断是否有 Z 轴速度来播放行走动画
-        // 注意：因为你目前 Z 轴是自动恒速的，所以只要游戏运行 isMoving 就会为 true
         bool isMoving = Mathf.Abs(rb.velocity.z) > 0.1f;
 
         anim.SetBool("isMoving", isMoving);
         anim.SetBool("isGrounded", isGrounded);
 
-        // 可选：如果需要跳跃上升和下落的动画细节，可以传 Y 轴速度
+        // 跳跃上升和下落的动画细节
         anim.SetFloat("vSpeed", rb.velocity.y);
     }
 }
