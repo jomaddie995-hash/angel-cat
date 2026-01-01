@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - TriggerObject
+  - Boss
   layers:
   - Default
   - TransparentFX
