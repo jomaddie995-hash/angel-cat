@@ -331,6 +331,7 @@ MonoBehaviour:
   gameOverPanelPrefab: {fileID: 0}
   triggerSound: {fileID: 0}
   fadeInDuration: 1
+  bossCharacterController: {fileID: 0}
 --- !u!1 &2620143605393272990
 GameObject:
   m_ObjectHideFlags: 0
