@@ -7,10 +7,15 @@ public class BossTriggerGameReset : MonoBehaviour
     // 可在编辑器拖拽赋值的引用（已替换预制体名称，避免冲突）
     [Header("核心配置")]
     public GameObject gameOverPanelPrefab; // 全屏Panel预制体（新名称：游戏结束Panel）
-    public AudioClip triggerSound; // 触发时播放的音效文件
+    public AudioClip triggerSound; // 触发时播放的音效文件（原触发音效）
+    public AudioClip loseSound; // 新增：游戏失败（Lose）音效文件
     private AudioSource audioSource; // 音频播放组件
     private bool hasTriggered = false; // 防止重复触发标记
     public float fadeInDuration = 1f; // Panel渐显时长（默认1秒）
+
+    [Header("BGM控制配置（新增）")]
+    public GameObject bgmManagerObj; // 拖入BGM管理器所在游戏对象
+    private AudioSource _bgmAudioSource; // BGM音频源缓存
 
     // 新增：若Boss使用CharacterController移动，需手动赋值（可选）
     [Header("Boss移动配置（按需赋值）")]
@@ -33,6 +38,29 @@ public class BossTriggerGameReset : MonoBehaviour
         {
             bossCharacterController = GetComponent<CharacterController>();
         }
+
+        // 新增：初始化BGM音频源
+        InitBGMSetting();
+    }
+
+    /// <summary>
+    /// 新增：初始化BGM配置
+    /// </summary>
+    private void InitBGMSetting()
+    {
+        if (bgmManagerObj != null)
+        {
+            // 获取BGM管理器上的AudioSource组件
+            _bgmAudioSource = bgmManagerObj.GetComponent<AudioSource>();
+            if (_bgmAudioSource == null)
+            {
+                Debug.LogWarning("【BossTriggerGameReset】BGM管理器对象上未挂载AudioSource组件！");
+            }
+        }
+        else
+        {
+            Debug.LogError("【BossTriggerGameReset】请为bgmManagerObj绑定BGM管理器游戏对象！");
+        }
     }
 
     /// <summary>
@@ -45,13 +73,84 @@ public class BossTriggerGameReset : MonoBehaviour
         {
             hasTriggered = true; // 标记为已触发，防止重复执行
             StopBossMovement(); // 新增：触碰后立即停止Boss移动
-            PlayTriggerSound(); // 播放触发音效
+            PlayTriggerSound(); // 播放原触发音效
+            PlayLoseSound(); // 新增：播放Lose音效
+            StopBGM(); // 新增：播放Lose音效时关闭BGM
             StartCoroutine(ShowPanelWithFadeIn()); // 启动协程实现Panel渐显
         }
     }
 
     /// <summary>
-    /// 新增：停止Boss移动的核心方法（兼容两种移动方式）
+    /// 新增：播放Lose音效
+    /// </summary>
+    private void PlayLoseSound()
+    {
+        // 空值判断，避免无效调用报错
+        if (loseSound != null && audioSource != null)
+        {
+            // 停止当前可能正在播放的触发音效，再播放Lose音效
+            if (audioSource.isPlaying)
+            {
+                audioSource.Stop();
+            }
+            // 若需要Lose音效循环播放，可开启此行（默认不循环）
+            // audioSource.loop = true;
+            audioSource.clip = loseSound;
+            audioSource.Play();
+            Debug.Log("【BossTriggerGameReset】Lose音效已播放！");
+        }
+        else
+        {
+            if (loseSound == null)
+            {
+                Debug.LogWarning("【BossTriggerGameReset】请为loseSound绑定Lose音效文件！");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 新增：停止BGM播放（使用Pause保留播放进度，更友好）
+    /// </summary>
+    private void StopBGM()
+    {
+        // 空值判断，确保BGM音频源有效
+        if (_bgmAudioSource != null && _bgmAudioSource.isPlaying)
+        {
+            _bgmAudioSource.Pause(); // 暂停BGM（保留播放位置，恢复时继续播放）
+            // 若需要完全停止BGM（从头播放），可替换为 _bgmAudioSource.Stop();
+            Debug.Log("【BossTriggerGameReset】BGM已暂停！");
+        }
+    }
+
+    /// <summary>
+    /// 新增：恢复BGM播放
+    /// </summary>
+    private void ResumeBGM()
+    {
+        // 空值判断，避免重复播放报错
+        if (_bgmAudioSource != null && !_bgmAudioSource.isPlaying)
+        {
+            _bgmAudioSource.Play();
+            Debug.Log("【BossTriggerGameReset】BGM已恢复播放！");
+        }
+    }
+
+    /// <summary>
+    /// 新增：停止Lose音效播放
+    /// </summary>
+    private void StopLoseSound()
+    {
+        if (audioSource != null && audioSource.clip == loseSound && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+            // 重置音效循环状态（若之前开启了循环）
+            audioSource.loop = false;
+            Debug.Log("【BossTriggerGameReset】Lose音效已停止！");
+        }
+    }
+
+    /// <summary>
+    /// 停止Boss移动的核心方法（兼容两种移动方式）
     /// </summary>
     private void StopBossMovement()
     {
@@ -84,7 +183,7 @@ public class BossTriggerGameReset : MonoBehaviour
     }
 
     /// <summary>
-    /// 播放触发音效
+    /// 播放原触发音效
     /// </summary>
     private void PlayTriggerSound()
     {
@@ -147,10 +246,16 @@ public class BossTriggerGameReset : MonoBehaviour
     }
 
     /// <summary>
-    /// 重新开始游戏（供Panel上的按钮绑定调用）
+    /// 重新开始游戏（供Panel上的按钮绑定调用）- 已新增音效和BGM控制逻辑
     /// </summary>
     public void RestartGameScene()
     {
+        // 新增：停止Lose音效播放
+        StopLoseSound();
+
+        // 新增：恢复BGM播放
+        ResumeBGM();
+
         // 恢复游戏时间（若之前暂停了游戏，必须先恢复）
         Time.timeScale = 1f;
 

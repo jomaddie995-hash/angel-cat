@@ -20,6 +20,12 @@ public class DecibelMeter : MonoBehaviour
     public float decreaseSpeed = 0.5f;
     public float maxDecibelValue = 100f;
 
+    [Header("音频控制配置（新增）")]
+    public AudioClip fullScreenUIAudio; // 全屏UI触发时播放的音频
+    public AudioSource audioPlayer; // 播放全屏UI音频的AudioSource（可挂载在当前对象上）
+    public GameObject mainBGMManagerObj; // 拖入MainBGMManager所在的游戏对象
+    private AudioSource _mainBGMAudioSource; // MainBGM的AudioSource缓存
+
     private float currentDecibelValue = 0f;
     private float currentFadeAlpha = 0f; // 渐变透明度
     private Image fullScreenUIImage; // 全屏UI的图片组件（用于渐变）
@@ -31,6 +37,8 @@ public class DecibelMeter : MonoBehaviour
     {
         // 初始化全屏UI
         InitFullScreenUI();
+        // 初始化音频相关（新增）
+        InitAudioSetting();
     }
 
     void Update()
@@ -63,7 +71,7 @@ public class DecibelMeter : MonoBehaviour
         }
     }
 
-    // 初始化全屏UI（新增：增加空值判断，修复引用错误）
+    // 初始化全屏UI（保留原有功能）
     private void InitFullScreenUI()
     {
         // 先判断全屏UI是否为空，避免空引用
@@ -100,7 +108,39 @@ public class DecibelMeter : MonoBehaviour
         }
     }
 
-    // 检测分贝是否达到最大值100（修复不弹出问题，增加多重判断）
+    // 新增：初始化音频配置
+    private void InitAudioSetting()
+    {
+        // 初始化全屏UI音频播放器
+        if (audioPlayer == null)
+        {
+            // 若未指定AudioSource，自动在当前对象上添加
+            audioPlayer = gameObject.GetComponent<AudioSource>();
+            if (audioPlayer == null)
+            {
+                audioPlayer = gameObject.AddComponent<AudioSource>();
+            }
+            // 默认设置：不循环播放、播放时不打断其他音频（可修改）
+            audioPlayer.loop = false;
+            audioPlayer.playOnAwake = false;
+        }
+
+        // 初始化MainBGM音频源
+        if (mainBGMManagerObj != null)
+        {
+            _mainBGMAudioSource = mainBGMManagerObj.GetComponent<AudioSource>();
+            if (_mainBGMAudioSource == null)
+            {
+                Debug.LogWarning("【DecibelMeter】MainBGMManager对象上未挂载AudioSource组件！");
+            }
+        }
+        else
+        {
+            Debug.LogError("【DecibelMeter】请为mainBGMManagerObj绑定MainBGMManager游戏对象！");
+        }
+    }
+
+    // 检测分贝是否达到最大值100（保留原有功能）
     private void CheckDecibelMaxValue()
     {
         // 条件优化：数值达到100 + UI未显示 + 未在渐变中 + UI不为空 + 未触发过
@@ -115,7 +155,7 @@ public class DecibelMeter : MonoBehaviour
         }
     }
 
-    // 触发全屏UI渐变显现（新增：隐藏分贝Slider和Text）
+    // 触发全屏UI渐变显现（新增音频播放和BGM关闭逻辑）
     private void TriggerFullScreenUI()
     {
         if (fullScreenUI == null) return; // 空值保护
@@ -124,11 +164,64 @@ public class DecibelMeter : MonoBehaviour
         currentFadeAlpha = 0f;
         UpdateUIFadeAlpha();
 
-        // ========== 新增：隐藏Canvas中的分贝Slider和Text ==========
+        // 隐藏Canvas中的分贝Slider和Text
         HideDecibelUIElements();
+
+        // ========== 新增：播放全屏UI音频 ==========
+        PlayFullScreenUIAudio();
+
+        // ========== 新增：关闭MainBGM音乐 ==========
+        StopMainBGM();
     }
 
-    // 更新UI渐变显现效果（修复引用错误，增加空值判断）
+    // 新增：播放全屏UI触发音频
+    private void PlayFullScreenUIAudio()
+    {
+        // 空值判断，避免报错
+        if (audioPlayer != null && fullScreenUIAudio != null)
+        {
+            // 停止当前正在播放的音频（若有），再播放新音频
+            if (audioPlayer.isPlaying)
+            {
+                audioPlayer.Stop();
+            }
+            audioPlayer.clip = fullScreenUIAudio;
+            audioPlayer.Play();
+            Debug.Log("【DecibelMeter】全屏UI音频已播放！");
+        }
+        else
+        {
+            if (fullScreenUIAudio == null)
+            {
+                Debug.LogWarning("【DecibelMeter】请为fullScreenUIAudio绑定要播放的音频文件！");
+            }
+        }
+    }
+
+    // 新增：停止MainBGM音乐
+    private void StopMainBGM()
+    {
+        // 空值判断，确保MainBGM音频源有效
+        if (_mainBGMAudioSource != null && _mainBGMAudioSource.isPlaying)
+        {
+            _mainBGMAudioSource.Pause(); // 使用Pause（暂停）而非Stop（停止），方便后续恢复播放位置
+            // 若需要完全停止（从头播放），可替换为 _mainBGMAudioSource.Stop();
+            Debug.Log("【DecibelMeter】MainBGM已暂停！");
+        }
+    }
+
+    // 新增：恢复播放MainBGM音乐
+    private void ResumeMainBGM()
+    {
+        // 空值判断，确保MainBGM音频源有效
+        if (_mainBGMAudioSource != null && !_mainBGMAudioSource.isPlaying)
+        {
+            _mainBGMAudioSource.Play();
+            Debug.Log("【DecibelMeter】MainBGM已恢复播放！");
+        }
+    }
+
+    // 更新UI渐变显现效果（保留原有功能）
     private void UpdateUIFadeIn()
     {
         // 多重空值判断，避免访问已销毁/为空的对象
@@ -150,7 +243,7 @@ public class DecibelMeter : MonoBehaviour
         }
     }
 
-    // 更新UI透明度（增加空值判断）
+    // 更新UI透明度（保留原有功能）
     private void UpdateUIFadeAlpha()
     {
         if (fullScreenUIImage == null) return; // 空值保护
@@ -159,7 +252,7 @@ public class DecibelMeter : MonoBehaviour
         fullScreenUIImage.color = uiColor;
     }
 
-    // 按钮点击事件：关闭UI并清零数值（新增：恢复显示分贝Slider和Text）
+    // 按钮点击事件：关闭UI并清零数值（新增恢复BGM和显示分贝UI逻辑）
     private void OnCloseUIButtonClicked()
     {
         // 空值判断，避免访问已销毁的对象
@@ -180,11 +273,14 @@ public class DecibelMeter : MonoBehaviour
         hasTriggeredUI = false; // 重置触发标记，允许下次再次触发
         Debug.Log("【DecibelMeter】全屏UI已关闭，分贝数值已清零！");
 
-        // ========== 新增：恢复显示Canvas中的分贝Slider和Text ==========
+        // 恢复显示Canvas中的分贝Slider和Text
         ShowDecibelUIElements();
+
+        // ========== 新增：恢复播放MainBGM ==========
+        ResumeMainBGM();
     }
 
-    // ========== 新增：隐藏分贝相关UI元素（Slider、Text、TMP Text） ==========
+    // 隐藏分贝相关UI元素（保留原有功能）
     private void HideDecibelUIElements()
     {
         // 隐藏Slider
@@ -209,7 +305,7 @@ public class DecibelMeter : MonoBehaviour
         }
     }
 
-    // ========== 新增：显示分贝相关UI元素（Slider、Text、TMP Text） ==========
+    // 显示分贝相关UI元素（保留原有功能）
     private void ShowDecibelUIElements()
     {
         // 显示Slider
@@ -288,6 +384,8 @@ public class DecibelMeter : MonoBehaviour
         currentFadeAlpha = 0f;
         // 脚本禁用时恢复显示分贝UI
         ShowDecibelUIElements();
+        // 脚本禁用时恢复MainBGM播放
+        ResumeMainBGM();
     }
 
     void OnDestroy()
@@ -297,5 +395,7 @@ public class DecibelMeter : MonoBehaviour
         {
             closeUIButton.onClick.RemoveAllListeners();
         }
+        // 销毁时恢复MainBGM播放
+        ResumeMainBGM();
     }
 }
