@@ -10,6 +10,9 @@ public class PanelTriggerController : MonoBehaviour
     private bool hasTriggered = false;
     // 渐显时长（可在编辑器调整，默认1秒完成渐显）
     public float fadeInDuration = 1f;
+    [Header("音效设置")]
+    public AudioSource bgmSource;    // 拖入场景中播放BGM的物体
+    public AudioClip victoryMusic;   // 拖入胜利音效文件
 
     /// <summary>
     /// 触发器进入检测（Player进入时调用）
@@ -17,6 +20,23 @@ public class PanelTriggerController : MonoBehaviour
     /// <param name="other">进入触发器的碰撞体</param>
     private void OnTriggerEnter(Collider other)
     {
+        if (other.CompareTag("Player") && !hasTriggered)
+        {
+            hasTriggered = true;
+
+            // --- 添加切换音效的代码 ---
+            if (bgmSource != null && victoryMusic != null)
+            {
+                bgmSource.Stop();            // 停止原来的音乐
+                bgmSource.clip = victoryMusic; // 换成胜利音效
+                bgmSource.loop = false;      // 胜利音效通常不需要循环
+                bgmSource.Play();            // 开始播放
+            }
+            // -------------------------
+
+            StartCoroutine(ShowFullscreenPanelWithFadeIn());
+        }
+
         // 检测是否是Player标签，且未触发过
         if (other.CompareTag("Player") && !hasTriggered)
         {
