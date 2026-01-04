@@ -8927,9 +8927,9 @@ GameObject:
   - component: {fileID: 31473475}
   - component: {fileID: 31473474}
   - component: {fileID: 31473476}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: "\u5FAE\u4FE1\u56FE\u7247_20251230095758_165_3_2"
-  m_TagString: TriggerObject
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -86866,9 +86866,9 @@ GameObject:
   - component: {fileID: 320367636}
   - component: {fileID: 320367635}
   - component: {fileID: 320367637}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: "\u5FAE\u4FE1\u56FE\u7247_20251230092000_161_3_1"
-  m_TagString: TriggerObject
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -105816,9 +105816,9 @@ GameObject:
   - component: {fileID: 395386274}
   - component: {fileID: 395386273}
   - component: {fileID: 395386275}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: "\u5FAE\u4FE1\u56FE\u7247_20251230095758_165_3_3"
-  m_TagString: TriggerObject
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -149725,9 +149725,9 @@ GameObject:
   - component: {fileID: 569795484}
   - component: {fileID: 569795483}
   - component: {fileID: 569795485}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: "\u5FAE\u4FE1\u56FE\u7247_20251230092000_161_3_3"
-  m_TagString: TriggerObject
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -187965,9 +187965,9 @@ GameObject:
   - component: {fileID: 716041880}
   - component: {fileID: 716041879}
   - component: {fileID: 716041881}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: "\u5FAE\u4FE1\u56FE\u7247_20251230092000_161_3_0"
-  m_TagString: TriggerObject
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -355258,9 +355258,9 @@ GameObject:
   - component: {fileID: 1385005249}
   - component: {fileID: 1385005248}
   - component: {fileID: 1385005250}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: "\u5FAE\u4FE1\u56FE\u7247_20251230095758_165_3_0"
-  m_TagString: TriggerObject
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -441717,9 +441717,9 @@ GameObject:
   - component: {fileID: 1708025143}
   - component: {fileID: 1708025145}
   - component: {fileID: 1708025144}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: "\u5FAE\u4FE1\u56FE\u7247_20251230092000_161_3_5"
-  m_TagString: TriggerObject
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
