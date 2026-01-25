@@ -195,8 +195,14 @@ public class StepSoundTrigger : MonoBehaviour
         float elapsedTime = 0f;
         while (currentFrameIndex < animationSprites.Length && elapsedTime < animationDuration)
         {
+            if (animationGameObject == null)
+            {
+                // Debug.Log("已修复");
+                break;
+            }
+         
             // 切换当前帧的精灵
-            animationSpriteRenderer.sprite = animationSprites[currentFrameIndex];
+            animationSpriteRenderer.sprite = animationSprites[currentFrameIndex]; 
             // 切换到下一帧
             currentFrameIndex++;
             // 等待帧间隔时间
